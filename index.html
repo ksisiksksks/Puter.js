@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dark AI (Unlimited)</title>
+    
+    <script src="https://js.puter.com/v2/"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        body { background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; }
+        
+        /* Efek Garis TV (Scanline) */
+        .scanline {
+            position: fixed; top: 0; left: 0; w-full; h-full;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px; pointer-events: none; z-index: 50;
+        }
+
+        /* Scrollbar Hijau Hacker */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #001100; }
+        ::-webkit-scrollbar-thumb { background: #004400; border-radius: 3px; }
+        
+        /* Format Chat Box */
+        .prose strong { color: #86efac; } 
+        .prose code { background: #002200; color: #a3e635; padding: 2px 5px; border-radius: 4px; }
+        .prose p { margin-bottom: 0.5rem; }
+        
+        .hidden-panel { display: none; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+    
+    <div class="scanline"></div>
+
+    <div class="border-b border-green-900/50 p-4 flex justify-between items-center bg-black z-20">
+        <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+            <h1 class="text-xl font-bold tracking-widest text-green-500 text-shadow">DARK <span class="text-white">PUTER</span></h1>
+        </div>
+        <button onclick="toggleConfig()" class="text-xs border border-green-800 text-green-600 px-2 py-1 hover:bg-green-900/20 uppercase">
+            [ SETTINGS ]
+        </button>
+    </div>
+
+    <div id="config-panel" class="hidden-panel absolute top-16 left-0 right-0 bg-black border-b border-green-900 p-4 z-30 shadow-2xl">
+        <label class="text-green-600 text-xs font-bold uppercase tracking-widest mb-2 block">System Prompt (Peran AI)</label>
+        <textarea id="system-prompt-input" rows="3" class="w-full bg-gray-900 border border-green-900 text-green-400 p-2 text-sm focus:outline-none rounded mb-2"></textarea>
+        <button onclick="saveConfig()" class="bg-green-900/50 hover:bg-green-800 text-green-300 w-full py-2 text-xs font-bold uppercase border border-green-700">
+            SIMPAN
+        </button>
+    </div>
+
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 pb-24 scroll-smooth">
+        <div class="flex gap-3">
+            <div class="w-8 h-8 bg-green-900/20 border border-green-800 text-green-500 flex items-center justify-center shrink-0 font-bold text-xs">AI</div>
+            <div class="bg-green-900/10 border border-green-900/50 p-3 rounded text-sm text-green-400 max-w-[90%]">
+                <p>Sistem Puter.js Terhubung. Tanpa API Key. Tanpa Batas. Apa perintah Anda?</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 w-full bg-black border-t border-green-900/50 p-4 z-20">
+        <div class="max-w-4xl mx-auto flex gap-2">
+            <input type="text" id="user-input" autocomplete="off"
+                class="flex-1 bg-gray-900 border border-green-900 text-green-400 p-3 rounded focus:outline-none focus:border-green-500 placeholder-green-800 text-sm font-mono"
+                placeholder="Ketik perintah...">
+            <button onclick="sendMessage()" class="bg-green-800 hover:bg-green-700 text-white px-6 rounded font-bold text-sm uppercase tracking-wider">
+                KIRIM
+            </button>
+        </div>
+        <div class="text-center mt-2">
+            <p class="text-[10px] text-green-800">POWERED BY PUTER.JS</p>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIKA UTAMA ---
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        
+        // Ambil prompt dari simpanan atau pakai default
+        let systemPrompt = localStorage.getItem('puter_prompt') || "Kamu adalah Dark AI, asisten hacker yang misterius. Jawab singkat dan to the point.";
+        document.getElementById('system-prompt-input').value = systemPrompt;
+
+        // Event Enter
+        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        function toggleConfig() {
+            document.getElementById('config-panel').classList.toggle('hidden-panel');
+        }
+
+        function saveConfig() {
+            const val = document.getElementById('system-prompt-input').value;
+            if(val) {
+                systemPrompt = val;
+                localStorage.setItem('puter_prompt', val);
+                alert("Kepribadian disimpan!");
+                toggleConfig();
+            }
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Tampilkan pesan user
+            appendMessage('user', text);
+            userInput.value = '';
+            
+            const loadingId = showLoading();
+
+            try {
+                // --- BAGIAN PENTING: PANGGIL PUTER.JS ---
+                // Kita gabungkan system prompt dengan pesan user agar AI mengerti perannya
+                const finalPrompt = `Instruksi Sistem: ${systemPrompt}\n\nUser: ${text}`;
+                
+                // Panggil Puter AI Chat
+                const response = await puter.ai.chat(finalPrompt);
+                
+                // Hapus loading
+                removeLoading(loadingId);
+
+                // Cek hasil (Puter kadang mengembalikan objek, kadang teks langsung)
+                let aiText = "";
+                if (typeof response === 'object' && response.message) {
+                    aiText = response.message.content;
+                } else {
+                    aiText = response.toString();
+                }
+
+                appendMessage('ai', aiText);
+
+            } catch (err) {
+                removeLoading(loadingId);
+                appendMessage('system', "Gagal terhubung ke Puter.js. Pastikan internet lancar atau coba refresh.");
+                console.error(err);
+            }
+        }
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `flex gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            
+            // Format Markdown jika AI
+            let contentHtml = role === 'ai' ? marked.parse(text) : `<p>${text}</p>`;
+
+            // Styling Bubble
+            let bubble = role === 'ai' 
+                ? 'bg-green-900/10 border border-green-900/50 text-green-300 prose prose-invert max-w-none' 
+                : 'bg-green-600/20 border border-green-600 text-white';
+
+            if (role === 'system') {
+                div.innerHTML = `<div class="w-full text-center text-red-500 text-xs p-2 border border-red-900 bg-red-950/50">${text}</div>`;
+            } else {
+                div.innerHTML = `
+                    <div class="w-8 h-8 flex items-center justify-center shrink-0 text-[10px] font-bold border ${role === 'ai' ? 'bg-green-900/20 border-green-800 text-green-500' : 'bg-gray-800 border-gray-700 text-gray-400'}">
+                        ${role === 'ai' ? 'AI' : 'OP'}
+                    </div>
+                    <div class="p-3 rounded text-sm max-w-[85%] shadow-lg ${bubble}">
+                        ${contentHtml}
+                    </div>
+                `;
+            }
+
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showLoading() {
+            const id = 'load-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex gap-3';
+            div.innerHTML = `
+                <div class="w-8 h-8 bg-green-900/20 border border-green-800 text-green-500 flex items-center justify-center shrink-0 text-[10px]">AI</div>
+                <div class="bg-green-900/10 border border-green-900/50 p-3 rounded flex gap-1 items-center">
+                    <span class="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 bg-green-500 animate-pulse delay-75"></span>
+                    <span class="w-1.5 h-1.5 bg-green-500 animate-pulse delay-150"></span>
+                    <span class="text-xs text-green-500 ml-2 animate-pulse">Menghubungi Satelit...</span>
+                </div>
+            `;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            return id;
+        }
+
+        function removeLoading(id) { const el = document.getElementById(id); if(el) el.remove(); }
+    </script>
+</body>
+</html>
