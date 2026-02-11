@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dark AI (Unlimited)</title>
+    <title>Rafi AI</title>
     
     <script src="https://js.puter.com/v2/"></script>
     
@@ -11,121 +11,125 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        body { background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; }
+        /* Gaya Scrollbar Minimalis */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
         
-        /* Efek Garis TV (Scanline) */
-        .scanline {
-            position: fixed; top: 0; left: 0; w-full; h-full;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
-            background-size: 100% 4px; pointer-events: none; z-index: 50;
+        /* Animasi Loading Titik */
+        .dot-flashing {
+            position: relative; width: 6px; height: 6px; border-radius: 5px;
+            background-color: #9ca3af; color: #9ca3af;
+            animation: dot-flashing 1s infinite linear alternate;
+            animation-delay: 0.5s;
         }
+        .dot-flashing::before, .dot-flashing::after {
+            content: ""; display: inline-block; position: absolute; top: 0;
+            width: 6px; height: 6px; border-radius: 5px; background-color: #9ca3af; color: #9ca3af;
+            animation: dot-flashing 1s infinite alternate;
+        }
+        .dot-flashing::before { left: -10px; animation-delay: 0s; }
+        .dot-flashing::after { left: 10px; animation-delay: 1s; }
+        @keyframes dot-flashing { 0% { background-color: #9ca3af; } 50%, 100% { background-color: #374151; } }
 
-        /* Scrollbar Hijau Hacker */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #001100; }
-        ::-webkit-scrollbar-thumb { background: #004400; border-radius: 3px; }
-        
-        /* Format Chat Box */
-        .prose strong { color: #86efac; } 
-        .prose code { background: #002200; color: #a3e635; padding: 2px 5px; border-radius: 4px; }
-        .prose p { margin-bottom: 0.5rem; }
-        
-        .hidden-panel { display: none; }
+        /* Format Teks Markdown */
+        .prose p { margin-bottom: 0.8em; }
+        .prose strong { color: #60a5fa; font-weight: 600; }
+        .prose code { background: #374151; color: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        .prose pre { background: #1f2937; padding: 12px; border-radius: 8px; overflow-x: auto; border: 1px solid #374151; margin-top: 8px; }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
-    
-    <div class="scanline"></div>
+<body class="bg-gray-900 text-gray-100 h-screen flex flex-col font-sans antialiased selection:bg-blue-600 selection:text-white">
 
-    <div class="border-b border-green-900/50 p-4 flex justify-between items-center bg-black z-20">
-        <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-            <h1 class="text-xl font-bold tracking-widest text-green-500 text-shadow">DARK <span class="text-white">PUTER</span></h1>
+    <div class="bg-gray-900 border-b border-gray-800 p-4 flex justify-between items-center sticky top-0 z-20 shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white">Rafi AI</h1>
+                <p class="text-[10px] text-gray-400 font-medium">Versi ChatGPT 4.0 (Puter)</p>
+            </div>
         </div>
-        <button onclick="toggleConfig()" class="text-xs border border-green-800 text-green-600 px-2 py-1 hover:bg-green-900/20 uppercase">
-            [ SETTINGS ]
-        </button>
+        <div class="px-3 py-1 bg-gray-800 rounded-full border border-gray-700">
+            <span class="w-2 h-2 bg-green-500 rounded-full inline-block animate-pulse"></span>
+            <span class="text-xs text-gray-300 ml-1 font-medium">Online</span>
+        </div>
     </div>
 
-    <div id="config-panel" class="hidden-panel absolute top-16 left-0 right-0 bg-black border-b border-green-900 p-4 z-30 shadow-2xl">
-        <label class="text-green-600 text-xs font-bold uppercase tracking-widest mb-2 block">System Prompt (Peran AI)</label>
-        <textarea id="system-prompt-input" rows="3" class="w-full bg-gray-900 border border-green-900 text-green-400 p-2 text-sm focus:outline-none rounded mb-2"></textarea>
-        <button onclick="saveConfig()" class="bg-green-900/50 hover:bg-green-800 text-green-300 w-full py-2 text-xs font-bold uppercase border border-green-700">
-            SIMPAN
-        </button>
-    </div>
-
-    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 pb-24 scroll-smooth">
-        <div class="flex gap-3">
-            <div class="w-8 h-8 bg-green-900/20 border border-green-800 text-green-500 flex items-center justify-center shrink-0 font-bold text-xs">AI</div>
-            <div class="bg-green-900/10 border border-green-900/50 p-3 rounded text-sm text-green-400 max-w-[90%]">
-                <p>Sistem Puter.js Terhubung. Tanpa API Key. Tanpa Batas. Apa perintah Anda?</p>
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-6 pb-24 scroll-smooth">
+        <div class="flex gap-4 max-w-3xl mx-auto">
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mt-1">
+                <span class="font-bold text-xs">AI</span>
+            </div>
+            <div class="space-y-1">
+                <div class="text-xs text-gray-400 font-medium ml-1">Rafi AI</div>
+                <div class="bg-gray-800 p-4 rounded-2xl rounded-tl-none border border-gray-700 shadow-sm">
+                    <p class="text-sm leading-relaxed text-gray-200">Halo! Saya Rafi AI. Ada yang bisa saya bantu hari ini?</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-0 w-full bg-black border-t border-green-900/50 p-4 z-20">
-        <div class="max-w-4xl mx-auto flex gap-2">
-            <input type="text" id="user-input" autocomplete="off"
-                class="flex-1 bg-gray-900 border border-green-900 text-green-400 p-3 rounded focus:outline-none focus:border-green-500 placeholder-green-800 text-sm font-mono"
-                placeholder="Ketik perintah...">
-            <button onclick="sendMessage()" class="bg-green-800 hover:bg-green-700 text-white px-6 rounded font-bold text-sm uppercase tracking-wider">
-                KIRIM
+    <div class="fixed bottom-0 w-full bg-gray-900/95 border-t border-gray-800 p-4 backdrop-blur-md">
+        <div class="max-w-3xl mx-auto relative flex items-end gap-2 bg-gray-800 p-2 rounded-3xl border border-gray-700 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-all shadow-lg">
+            <textarea id="user-input" rows="1" 
+                class="w-full bg-transparent text-white placeholder-gray-500 text-sm px-4 py-3 focus:outline-none resize-none max-h-32"
+                placeholder="Tulis pesan untuk Rafi AI..."></textarea>
+            
+            <button onclick="sendMessage()" 
+                class="bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-full transition-all flex items-center justify-center mb-0.5 shrink-0 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
             </button>
         </div>
-        <div class="text-center mt-2">
-            <p class="text-[10px] text-green-800">POWERED BY PUTER.JS</p>
-        </div>
+        <p class="text-center text-[10px] text-gray-600 mt-3">Rafi AI dapat membuat kesalahan. Periksa informasi penting.</p>
     </div>
 
     <script>
-        // --- LOGIKA UTAMA ---
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
-        
-        // Ambil prompt dari simpanan atau pakai default
-        let systemPrompt = localStorage.getItem('puter_prompt') || "Kamu adalah Dark AI, asisten hacker yang misterius. Jawab singkat dan to the point.";
-        document.getElementById('system-prompt-input').value = systemPrompt;
 
-        // Event Enter
-        userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        // Agar textarea nambah tinggi otomatis saat ngetik panjang
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if(this.value === '') this.style.height = 'auto';
+        });
 
-        function toggleConfig() {
-            document.getElementById('config-panel').classList.toggle('hidden-panel');
-        }
-
-        function saveConfig() {
-            const val = document.getElementById('system-prompt-input').value;
-            if(val) {
-                systemPrompt = val;
-                localStorage.setItem('puter_prompt', val);
-                alert("Kepribadian disimpan!");
-                toggleConfig();
+        // Kirim pakai Enter (kecuali Shift+Enter buat baris baru)
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
-        }
+        });
 
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
 
-            // Tampilkan pesan user
+            // Tampilkan Pesan User
             appendMessage('user', text);
             userInput.value = '';
+            userInput.style.height = 'auto'; // Reset tinggi
             
+            // Tampilkan Loading
             const loadingId = showLoading();
 
             try {
-                // --- BAGIAN PENTING: PANGGIL PUTER.JS ---
-                // Kita gabungkan system prompt dengan pesan user agar AI mengerti perannya
-                const finalPrompt = `Instruksi Sistem: ${systemPrompt}\n\nUser: ${text}`;
+                // --- PANGGIL OTAK AI (PUTER.JS) ---
+                // Kita set "System Prompt" agar namanya jadi Rafi AI
+                const prompt = `System: Kamu adalah Rafi AI, asisten virtual yang cerdas, ramah, dan membantu. Gunakan bahasa Indonesia yang luwes.\n\nUser: ${text}`;
                 
-                // Panggil Puter AI Chat
-                const response = await puter.ai.chat(finalPrompt);
+                const response = await puter.ai.chat(prompt);
                 
-                // Hapus loading
                 removeLoading(loadingId);
 
-                // Cek hasil (Puter kadang mengembalikan objek, kadang teks langsung)
+                // Ambil teks jawaban
                 let aiText = "";
                 if (typeof response === 'object' && response.message) {
                     aiText = response.message.content;
@@ -137,60 +141,66 @@
 
             } catch (err) {
                 removeLoading(loadingId);
-                appendMessage('system', "Gagal terhubung ke Puter.js. Pastikan internet lancar atau coba refresh.");
+                appendMessage('system', "Maaf, koneksi terputus. Coba refresh halaman.");
                 console.error(err);
             }
         }
 
         function appendMessage(role, text) {
             const div = document.createElement('div');
-            div.className = `flex gap-3 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            div.className = `flex gap-4 max-w-3xl mx-auto w-full ${role === 'user' ? 'flex-row-reverse' : ''}`;
             
-            // Format Markdown jika AI
-            let contentHtml = role === 'ai' ? marked.parse(text) : `<p>${text}</p>`;
+            let avatar = '';
+            let bubbleStyle = '';
+            let content = '';
 
-            // Styling Bubble
-            let bubble = role === 'ai' 
-                ? 'bg-green-900/10 border border-green-900/50 text-green-300 prose prose-invert max-w-none' 
-                : 'bg-green-600/20 border border-green-600 text-white';
-
-            if (role === 'system') {
-                div.innerHTML = `<div class="w-full text-center text-red-500 text-xs p-2 border border-red-900 bg-red-950/50">${text}</div>`;
+            if (role === 'ai') {
+                avatar = `<div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-md"><span class="font-bold text-xs text-white">AI</span></div>`;
+                bubbleStyle = 'bg-gray-800 border border-gray-700 text-gray-200 rounded-tl-none';
+                content = `
+                    <div class="text-xs text-gray-400 font-medium ml-1 mb-1">Rafi AI</div>
+                    <div class="p-4 rounded-2xl ${bubbleStyle} shadow-sm prose prose-invert max-w-none text-sm leading-relaxed">
+                        ${marked.parse(text)}
+                    </div>`;
+            } else if (role === 'user') {
+                avatar = `<div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center shrink-0 mt-1"><svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>`;
+                bubbleStyle = 'bg-blue-600 text-white rounded-tr-none';
+                content = `
+                    <div class="p-3 px-5 rounded-2xl ${bubbleStyle} shadow-md text-sm leading-relaxed">
+                        ${text.replace(/\n/g, '<br>')}
+                    </div>`;
             } else {
-                div.innerHTML = `
-                    <div class="w-8 h-8 flex items-center justify-center shrink-0 text-[10px] font-bold border ${role === 'ai' ? 'bg-green-900/20 border-green-800 text-green-500' : 'bg-gray-800 border-gray-700 text-gray-400'}">
-                        ${role === 'ai' ? 'AI' : 'OP'}
-                    </div>
-                    <div class="p-3 rounded text-sm max-w-[85%] shadow-lg ${bubble}">
-                        ${contentHtml}
-                    </div>
-                `;
+                // System Error
+                content = `<div class="w-full text-center text-red-400 text-xs bg-red-900/20 p-2 rounded border border-red-900/50">${text}</div>`;
             }
 
+            div.innerHTML = role === 'system' ? content : (role === 'user' ? content + avatar : avatar + content);
             chatContainer.appendChild(div);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Scroll ke bawah
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
         function showLoading() {
             const id = 'load-' + Date.now();
             const div = document.createElement('div');
             div.id = id;
-            div.className = 'flex gap-3';
+            div.className = 'flex gap-4 max-w-3xl mx-auto w-full';
             div.innerHTML = `
-                <div class="w-8 h-8 bg-green-900/20 border border-green-800 text-green-500 flex items-center justify-center shrink-0 text-[10px]">AI</div>
-                <div class="bg-green-900/10 border border-green-900/50 p-3 rounded flex gap-1 items-center">
-                    <span class="w-1.5 h-1.5 bg-green-500 animate-pulse"></span>
-                    <span class="w-1.5 h-1.5 bg-green-500 animate-pulse delay-75"></span>
-                    <span class="w-1.5 h-1.5 bg-green-500 animate-pulse delay-150"></span>
-                    <span class="text-xs text-green-500 ml-2 animate-pulse">Menghubungi Satelit...</span>
+                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mt-1"><span class="font-bold text-xs text-white">AI</span></div>
+                <div class="bg-gray-800 border border-gray-700 p-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-3">
+                    <div class="dot-flashing mx-2"></div>
                 </div>
             `;
             chatContainer.appendChild(div);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             return id;
         }
 
-        function removeLoading(id) { const el = document.getElementById(id); if(el) el.remove(); }
+        function removeLoading(id) {
+            const el = document.getElementById(id);
+            if(el) el.remove();
+        }
     </script>
 </body>
 </html>
