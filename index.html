@@ -1,360 +1,378 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Apex AI - Next Gen</title>
+    <title>Apex AI - Ultimate</title>
     
     <script src="https://js.puter.com/v2/"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        brand: { 500: '#6366f1', 600: '#4f46e5' }, // Indigo Premium
+                        dark: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        body { font-family: 'Outfit', sans-serif; background-color: #000; color: white; }
-        
-        /* Glassmorphism Premium */
-        .glass { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glass-panel { background: #0a0a0a; border: 1px solid #222; }
-        
-        /* Neon Glow Effects */
-        .glow-text { text-shadow: 0 0 20px rgba(124, 58, 237, 0.5); }
-        .glow-border:focus-within { box-shadow: 0 0 15px rgba(124, 58, 237, 0.3); border-color: #7c3aed; }
-        
-        /* Utilities */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        /* CSS RESET & TWEAKS */
+        body { background-color: #0f172a; color: white; -webkit-tap-highlight-color: transparent; }
         .hidden-screen { display: none !important; }
         
-        /* Markdown Chat Styling */
-        .prose p { margin-bottom: 0.5rem; line-height: 1.5; }
-        .prose strong { color: #a78bfa; }
-        .prose code { background: #1f1f1f; padding: 2px 5px; border-radius: 4px; color: #e9d5ff; font-family: monospace; }
-        .prose pre { background: #111; padding: 10px; border-radius: 8px; border: 1px solid #333; overflow-x: auto; margin-top: 5px; }
+        /* Glassmorphism */
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Scrollbar Halus */
+        ::-webkit-scrollbar { width: 0px; background: transparent; } /* Hidden scrollbar for cleaner look */
+        
+        /* Animation */
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Markdown */
+        .prose p { margin-bottom: 0.5em; font-size: 0.95rem; line-height: 1.6; }
+        .prose strong { color: #818cf8; }
+        .prose code { background: #334155; padding: 2px 5px; rounded: 4px; font-family: monospace; font-size: 0.85em; }
+        .prose pre { background: #020617; padding: 10px; rounded: 8px; overflow-x: auto; margin-top: 8px; border: 1px solid #1e293b; }
     </style>
 </head>
-<body class="h-screen overflow-hidden flex flex-col bg-black">
+<body class="h-screen flex flex-col overflow-hidden selection:bg-brand-500 selection:text-white">
 
-    <div id="auth-screen" class="fixed inset-0 z-50 bg-black flex items-center justify-center p-6 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]">
-        
-        <div id="step-email" class="w-full max-w-md glass p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 to-blue-600"></div>
-            <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold mb-2 tracking-tight">Apex <span class="text-purple-500 glow-text">AI</span></h1>
-                <p class="text-gray-400 text-sm">Masuk dengan email untuk melanjutkan.</p>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold tracking-wider ml-1">Email Address</label>
-                    <input type="email" id="email-input" class="w-full bg-[#111] border border-[#333] text-white p-4 rounded-xl focus:outline-none focus:border-purple-500 transition-all mt-1" placeholder="nama@email.com">
-                </div>
-                <button onclick="sendVerificationCode()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 rounded-xl transition shadow-[0_0_20px_rgba(124,58,237,0.4)]">
-                    KIRIM KODE VERIFIKASI
-                </button>
-            </div>
+    <div id="auth-screen" class="fixed inset-0 z-50 bg-[#0f172a] flex items-center justify-center p-6">
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-brand-500/20 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-[0%] right-[0%] w-[40%] h-[40%] bg-purple-500/20 rounded-full blur-[100px]"></div>
         </div>
 
-        <div id="step-otp" class="hidden-screen w-full max-w-md glass p-8 rounded-3xl shadow-2xl text-center">
-            <div class="mb-6">
-                <i class="fas fa-shield-alt text-4xl text-purple-500 mb-4"></i>
-                <h2 class="text-xl font-bold">Verifikasi Keamanan</h2>
-                <p class="text-gray-400 text-xs mt-2">Kode telah dikirim ke <span id="display-email" class="text-white font-bold"></span></p>
+        <div class="w-full max-w-sm relative z-10 fade-in">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-purple-600 shadow-2xl shadow-brand-500/30 mb-4">
+                    <i class="ri-openai-fill text-3xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Apex AI</h1>
+                <p class="text-slate-400 text-sm mt-2">Masuk untuk melanjutkan ke Workspace</p>
             </div>
-            
-            <input type="number" id="otp-input" class="w-full bg-[#111] border border-[#333] text-white text-center text-2xl tracking-[10px] p-4 rounded-xl focus:outline-none focus:border-purple-500 transition-all mb-4" placeholder="000000">
-            
-            <button onclick="verifyCode()" class="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition">
-                VERIFIKASI & MASUK
-            </button>
-            <button onclick="backToEmail()" class="mt-4 text-xs text-gray-500 hover:text-white">Ganti Email</button>
+
+            <div class="bg-dark-800/50 border border-slate-700/50 backdrop-blur-xl p-6 rounded-2xl shadow-xl space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase ml-1">Email</label>
+                    <input type="email" id="email" class="w-full bg-dark-900/50 border border-slate-700 rounded-xl px-4 py-3 mt-1 text-white focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all placeholder-slate-600" placeholder="nama@email.com">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase ml-1">Password</label>
+                    <input type="password" id="password" class="w-full bg-dark-900/50 border border-slate-700 rounded-xl px-4 py-3 mt-1 text-white focus:outline-none focus:border-brand-500 transition-all placeholder-slate-600" placeholder="••••••••">
+                </div>
+                <button onclick="handleLogin()" id="login-btn" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-600/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <span>Masuk Akun</span>
+                    <i class="ri-arrow-right-line"></i>
+                </button>
+            </div>
+            <p class="text-center text-xs text-slate-500 mt-6">Belum punya akun? <span class="text-brand-500 cursor-pointer font-bold">Daftar (Gratis)</span></p>
         </div>
     </div>
 
-    <div id="app-screen" class="hidden-screen flex h-full relative">
+    <div id="app-screen" class="hidden-screen flex h-full relative bg-[#0f172a]">
         
-        <div id="sidebar" class="hidden md:flex flex-col w-72 glass-panel border-r border-[#222] z-20">
-            <div class="p-6 border-b border-[#222]">
+        <div class="hidden md:flex flex-col w-72 border-r border-slate-800 bg-dark-900/50 backdrop-blur-xl">
+            <div class="p-6 border-b border-slate-800/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center font-bold">A</div>
-                    <span class="font-bold text-lg tracking-wide">Apex AI</span>
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold shadow-lg shadow-brand-500/30">A</div>
+                    <div>
+                        <h2 class="font-bold text-base leading-tight">Apex AI</h2>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">PRO v7.0</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="p-4">
-                <button onclick="resetChat()" class="w-full bg-[#1a1a1a] hover:bg-[#252525] border border-[#333] text-white p-3 rounded-xl flex items-center justify-center gap-2 transition text-sm font-semibold">
-                    <i class="fas fa-plus text-purple-500"></i> Percakapan Baru
+
+            <div class="flex-1 p-4 space-y-1">
+                <button onclick="switchTab('chat')" id="nav-chat-d" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all bg-brand-600 text-white">
+                    <i class="ri-chat-4-line text-lg"></i> Chat AI
+                </button>
+                <button onclick="switchTab('video')" id="nav-video-d" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                    <i class="ri-movie-line text-lg"></i> Video Studio <span class="ml-auto text-[9px] bg-purple-500 text-white px-1 rounded">SORA</span>
+                </button>
+                <button onclick="switchTab('gallery')" id="nav-gallery-d" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                    <i class="ri-gallery-line text-lg"></i> Galeri
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto px-4 space-y-1" id="history-list">
-                </div>
-
-            <div class="p-4 border-t border-[#222] bg-[#050505]">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs" id="avatar-display">U</div>
+            <div class="p-4 border-t border-slate-800/50">
+                <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-500 flex items-center justify-center font-bold text-xs" id="avatar-sidebar">U</div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold truncate" id="username-display">User</p>
-                        <p class="text-[10px] text-green-500">● Online</p>
+                        <p class="text-sm font-bold truncate" id="username-sidebar">User</p>
+                        <p class="text-[10px] text-green-400">● Online</p>
                     </div>
-                    <button onclick="logout()" class="text-gray-500 hover:text-red-500"><i class="fas fa-power-off"></i></button>
+                    <button onclick="logout()" class="text-slate-400 hover:text-red-400"><i class="ri-logout-box-r-line"></i></button>
                 </div>
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col bg-[#000] relative">
+        <div class="flex-1 flex flex-col relative overflow-hidden">
             
-            <div class="h-16 border-b border-[#222] flex items-center justify-between px-4 glass z-10">
-                <div class="flex items-center gap-3">
-                    <button onclick="toggleSidebar()" class="md:hidden text-gray-400"><i class="fas fa-bars"></i></button>
-                    <div>
-                        <h1 class="font-bold text-sm flex items-center gap-2">
-                            Apex AI <span class="text-[10px] bg-purple-900/50 text-purple-400 px-2 rounded border border-purple-500/30">GPT-5.0</span>
-                        </h1>
+            <div class="md:hidden h-14 border-b border-slate-800 flex items-center justify-between px-4 glass z-20 sticky top-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded bg-brand-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+                    <span class="font-bold text-sm" id="page-title">Apex Chat</span>
+                </div>
+                <button onclick="logout()" class="text-slate-400"><i class="ri-logout-box-r-line"></i></button>
+            </div>
+
+            <div id="view-chat" class="flex-1 flex flex-col h-full absolute inset-0 pt-14 md:pt-0 z-10 bg-[#0f172a]">
+                <div id="chat-container" class="flex-1 overflow-y-auto p-4 pb-24 space-y-6">
+                    <div class="h-full flex flex-col items-center justify-center text-slate-600 opacity-50 space-y-4">
+                        <i class="ri-openai-fill text-5xl"></i>
+                        <p class="text-sm font-medium">Apex AI Ready</p>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <div class="text-[10px] px-2 py-1 rounded bg-[#111] border border-[#333] text-gray-400" id="limit-badge">
-                        Limit: 100
+
+                <div class="absolute bottom-0 w-full p-4 glass md:bg-[#0f172a] md:border-t md:border-slate-800 pb-20 md:pb-4">
+                    <div id="img-preview-box" class="hidden absolute bottom-full left-4 mb-2 p-1 bg-slate-800 rounded-lg border border-slate-700 shadow-xl">
+                        <img id="img-preview" src="" class="h-16 rounded object-cover">
+                        <button onclick="clearFile()" class="absolute -top-2 -right-2 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-xs"><i class="ri-close-line"></i></button>
+                    </div>
+
+                    <div class="max-w-3xl mx-auto flex items-end gap-2 bg-slate-900 border border-slate-700 p-1.5 rounded-2xl shadow-lg focus-within:border-brand-500 transition-colors">
+                        <button onclick="document.getElementById('file-upload').click()" class="p-3 text-slate-400 hover:text-brand-400 rounded-xl hover:bg-slate-800 transition">
+                            <i class="ri-image-add-line text-xl"></i>
+                        </button>
+                        <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleFile(this)">
+
+                        <textarea id="user-input" rows="1" class="flex-1 bg-transparent text-white placeholder-slate-500 text-sm py-3 focus:outline-none resize-none max-h-32" placeholder="Ketik pesan..."></textarea>
+                        
+                        <button onclick="sendMessage()" class="p-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg shadow-brand-600/20 transition active:scale-95">
+                            <i class="ri-send-plane-fill text-lg"></i>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div id="chat-box" class="flex-1 overflow-y-auto p-4 pb-32 space-y-6 scroll-smooth">
-                <div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-40 space-y-4">
-                    <i class="fas fa-cube text-4xl"></i>
-                    <p class="text-sm font-mono">APEX ENGINE READY</p>
+            <div id="view-video" class="hidden-screen flex-1 flex flex-col h-full absolute inset-0 pt-14 md:pt-0 bg-[#0f172a] z-10 overflow-y-auto">
+                <div class="p-6 max-w-2xl mx-auto w-full space-y-6 pb-24">
+                    <div class="text-center space-y-2 mt-4">
+                        <h2 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-brand-400 bg-clip-text text-transparent">Video Studio</h2>
+                        <p class="text-slate-400 text-sm">Generate video pendek menggunakan AI (Beta)</p>
+                    </div>
+
+                    <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-4 space-y-4">
+                        <textarea id="video-prompt" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-sm text-white focus:border-purple-500 focus:outline-none h-24 resize-none" placeholder="Deskripsikan video: Seekor kucing astronot melayang di angkasa..."></textarea>
+                        <button onclick="generateVideo()" id="gen-vid-btn" class="w-full bg-gradient-to-r from-purple-600 to-brand-600 hover:from-purple-500 hover:to-brand-500 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                            <i class="ri-movie-2-ai-line"></i> Generate Video
+                        </button>
+                    </div>
+
+                    <div id="video-result" class="hidden space-y-3">
+                        <h3 class="text-sm font-bold text-slate-300">Hasil:</h3>
+                        <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-slate-700 shadow-2xl">
+                            <img id="generated-video-src" src="" class="w-full h-full object-cover">
+                            <div class="absolute bottom-2 right-2 bg-black/60 px-2 py-1 rounded text-[10px] text-white backdrop-blur">AI GENERATED</div>
+                        </div>
+                        <button onclick="alert('Video disimpan ke galeri!')" class="w-full bg-slate-800 hover:bg-slate-700 text-sm py-3 rounded-xl border border-slate-700 transition">
+                            <i class="ri-download-line"></i> Simpan ke Galeri
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="absolute bottom-0 w-full bg-gradient-to-t from-black via-black to-transparent pt-10 pb-4 px-4">
-                
-                <div id="image-preview" class="hidden mb-2 bg-[#111] border border-[#333] p-2 rounded-xl w-fit relative animate-bounce-in">
-                    <img id="img-element" src="" class="h-20 rounded-lg object-cover">
-                    <button onclick="clearImage()" class="absolute -top-2 -right-2 bg-red-600 rounded-full w-5 h-5 flex items-center justify-center text-xs"><i class="fas fa-times"></i></button>
+            <div id="view-gallery" class="hidden-screen flex-1 absolute inset-0 pt-14 md:pt-0 bg-[#0f172a] z-10 overflow-y-auto p-6 pb-24">
+                <h2 class="text-xl font-bold mb-4">Galeri Tersimpan</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="gallery-grid">
+                    <div class="aspect-square bg-slate-800 rounded-xl border border-slate-700 flex items-center justify-center text-slate-600"><i class="ri-image-line"></i></div>
+                    <div class="aspect-square bg-slate-800 rounded-xl border border-slate-700 flex items-center justify-center text-slate-600"><i class="ri-image-line"></i></div>
                 </div>
+            </div>
+        </div>
 
-                <div class="max-w-3xl mx-auto flex items-end gap-2 bg-[#0a0a0a] border border-[#222] p-2 rounded-2xl shadow-2xl glow-border transition-all">
-                    
-                    <button onclick="document.getElementById('file-upload').click()" class="p-3 text-gray-400 hover:text-purple-400 transition">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                    <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleImage(this)">
-
-                    <textarea id="user-input" rows="1" class="flex-1 bg-transparent text-white placeholder-gray-600 text-sm py-3 focus:outline-none resize-none max-h-32" placeholder="Tanya sesuatu pada Apex AI..."></textarea>
-                    
-                    <button onclick="sendMessage()" id="send-btn" class="p-3 bg-white text-black rounded-xl hover:bg-gray-200 transition font-bold">
-                        <i class="fas fa-arrow-up"></i>
-                    </button>
-                </div>
-                <div class="text-center mt-2">
-                    <p class="text-[10px] text-gray-600">Powered by Apex Engine v5.0</p>
-                </div>
+        <div class="md:hidden fixed bottom-0 w-full bg-[#0f172a]/90 backdrop-blur-lg border-t border-slate-800 z-50 pb-safe">
+            <div class="flex justify-around items-center h-16">
+                <button onclick="switchTab('chat')" id="nav-chat-m" class="flex flex-col items-center justify-center w-full h-full text-brand-500">
+                    <i class="ri-chat-4-fill text-xl mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Chat</span>
+                </button>
+                <button onclick="switchTab('video')" id="nav-video-m" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+                    <i class="ri-movie-fill text-xl mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Video</span>
+                </button>
+                <button onclick="switchTab('gallery')" id="nav-gallery-m" class="flex flex-col items-center justify-center w-full h-full text-slate-500">
+                    <i class="ri-gallery-fill text-xl mb-0.5"></i>
+                    <span class="text-[10px] font-medium">Galeri</span>
+                </button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIG ---
-        const DAILY_LIMIT = 100;
-        let userData = JSON.parse(localStorage.getItem('apex_user'));
-        let chats = JSON.parse(localStorage.getItem('apex_chats')) || [];
-        let limit = JSON.parse(localStorage.getItem('apex_limit')) || { date: new Date().toDateString(), count: 0 };
+        // --- DATA & STATE ---
+        const authScreen = document.getElementById('auth-screen');
+        const appScreen = document.getElementById('app-screen');
+        const chatBox = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
         
-        // --- VARS ---
-        let generatedOTP = null;
-        let tempEmail = "";
+        let currentUser = localStorage.getItem('apex_user');
         let currentImage = null;
 
-        // --- AUTH SYSTEM (MOCK BACKEND) ---
+        // --- AUTH LOGIC (REAL FEEL) ---
         function init() {
-            if (userData) {
+            if (currentUser) {
+                // Auto Login
+                currentUser = JSON.parse(currentUser);
                 showApp();
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden-screen');
             }
         }
 
-        function sendVerificationCode() {
-            const email = document.getElementById('email-input').value;
-            if(!email.includes('@') || email.length < 5) return alert("Masukkan email valid!");
-            
-            tempEmail = email;
-            // Generate Random 6 Digit Code
-            generatedOTP = Math.floor(100000 + Math.random() * 900000);
-            
-            const btn = document.querySelector('#step-email button');
-            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> MENGIRIM...`;
+        function handleLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
+
+            if(!email || !pass) return alert("Harap isi email dan password!");
+
+            // Animasi Loading Server
+            btn.innerHTML = `<i class="ri-loader-4-line animate-spin text-xl"></i>`;
             
             setTimeout(() => {
-                // UI SWITCH
-                document.getElementById('step-email').classList.add('hidden-screen');
-                document.getElementById('step-otp').classList.remove('hidden-screen');
-                document.getElementById('display-email').innerText = email;
-                
-                // MOCK EMAIL ALERT (Karena ga ada server beneran)
-                alert(`[SIMULASI EMAIL]\n\nKode Verifikasi Apex AI Anda adalah: ${generatedOTP}\n\n(Masukkan kode ini untuk login)`);
+                // Simulasi Sukses
+                currentUser = {
+                    email: email,
+                    name: email.split('@')[0],
+                    avatar: email.charAt(0).toUpperCase()
+                };
+                localStorage.setItem('apex_user', JSON.stringify(currentUser));
+                showApp();
             }, 1500);
         }
 
-        function verifyCode() {
-            const input = document.getElementById('otp-input').value;
-            if (input == generatedOTP) {
-                // SUCCESS
-                userData = {
-                    email: tempEmail,
-                    name: tempEmail.split('@')[0],
-                    joined: Date.now()
-                };
-                localStorage.setItem('apex_user', JSON.stringify(userData));
-                showApp();
-            } else {
-                alert("Kode Salah! Coba lagi.");
-                document.getElementById('otp-input').value = "";
-            }
-        }
-
-        function backToEmail() {
-            document.getElementById('step-otp').classList.add('hidden-screen');
-            document.getElementById('step-email').classList.remove('hidden-screen');
-            document.querySelector('#step-email button').innerText = "KIRIM KODE VERIFIKASI";
+        function showApp() {
+            authScreen.classList.add('hidden-screen');
+            appScreen.classList.remove('hidden-screen');
+            // Set Profil Sidebar
+            document.getElementById('username-sidebar').innerText = currentUser.name;
+            document.getElementById('avatar-sidebar').innerText = currentUser.avatar;
         }
 
         function logout() {
-            localStorage.removeItem('apex_user');
-            location.reload();
+            if(confirm("Keluar dari Apex AI?")) {
+                localStorage.removeItem('apex_user');
+                location.reload();
+            }
         }
 
-        function showApp() {
-            document.getElementById('auth-screen').classList.add('hidden-screen');
-            document.getElementById('app-screen').classList.remove('hidden-screen');
-            document.getElementById('username-display').innerText = userData.name;
-            document.getElementById('avatar-display').innerText = userData.name.charAt(0).toUpperCase();
+        // --- NAVIGATION LOGIC (SPA) ---
+        function switchTab(tab) {
+            // Hide all views
+            document.getElementById('view-chat').classList.add('hidden-screen');
+            document.getElementById('view-video').classList.add('hidden-screen');
+            document.getElementById('view-gallery').classList.add('hidden-screen');
             
-            checkLimit();
-            loadHistory();
+            // Reset Nav Colors (Mobile & Desktop)
+            const navs = ['chat', 'video', 'gallery'];
+            navs.forEach(t => {
+                // Mobile
+                const iconM = document.querySelector(`#nav-${t}-m i`);
+                const textM = document.querySelector(`#nav-${t}-m span`);
+                document.getElementById(`nav-${t}-m`).classList.remove('text-brand-500');
+                document.getElementById(`nav-${t}-m`).classList.add('text-slate-500');
+                if(iconM) iconM.className = iconM.className.replace('-fill', '-line'); // Change icon style
+
+                // Desktop
+                document.getElementById(`nav-${t}-d`).classList.remove('bg-brand-600', 'text-white');
+                document.getElementById(`nav-${t}-d`).classList.add('text-slate-400', 'hover:bg-slate-800');
+            });
+
+            // Show selected view
+            document.getElementById(`view-${tab}`).classList.remove('hidden-screen');
+            
+            // Active State Mobile
+            const activeM = document.getElementById(`nav-${tab}-m`);
+            activeM.classList.remove('text-slate-500');
+            activeM.classList.add('text-brand-500');
+            const activeIconM = activeM.querySelector('i');
+            activeIconM.className = activeIconM.className.replace('-line', '-fill');
+
+            // Active State Desktop
+            const activeD = document.getElementById(`nav-${tab}-d`);
+            activeD.classList.remove('text-slate-400', 'hover:bg-slate-800');
+            activeD.classList.add('bg-brand-600', 'text-white');
+
+            // Update Header Title (Mobile)
+            const titles = { 'chat': 'Apex Chat', 'video': 'Video Studio', 'gallery': 'Galeri' };
+            document.getElementById('page-title').innerText = titles[tab];
         }
 
-        // --- LIMIT SYSTEM ---
-        function checkLimit() {
-            const today = new Date().toDateString();
-            if(limit.date !== today) {
-                limit = { date: today, count: 0 };
-                localStorage.setItem('apex_limit', JSON.stringify(limit));
-            }
-            document.getElementById('limit-badge').innerText = `Limit: ${limit.count}/${DAILY_LIMIT}`;
-        }
-
-        // --- IMAGE HANDLING ---
-        function handleImage(input) {
-            const file = input.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    currentImage = e.target.result;
-                    document.getElementById('img-element').src = currentImage;
-                    document.getElementById('image-preview').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function clearImage() {
-            currentImage = null;
-            document.getElementById('file-upload').value = '';
-            document.getElementById('image-preview').classList.add('hidden');
-        }
-
-        // --- CHAT ENGINE (FAST) ---
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-
+        // --- CHAT FEATURE ---
         userInput.addEventListener('keydown', (e) => {
             if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
 
         async function sendMessage() {
             const text = userInput.value.trim();
-            if((!text && !currentImage) || limit.count >= DAILY_LIMIT) return;
+            if(!text && !currentImage) return;
 
-            // Clear Welcome Screen
-            if(chatBox.querySelector('.fa-cube')) chatBox.innerHTML = '';
+            // Bersihkan welcome
+            if(chatBox.querySelector('.ri-openai-fill')) chatBox.innerHTML = '';
 
-            // Update Limit
-            limit.count++;
-            localStorage.setItem('apex_limit', JSON.stringify(limit));
-            checkLimit();
+            const userText = text; 
+            const userImg = currentImage;
 
-            // UI User
-            appendMessage('user', text, currentImage);
-            const userMsg = text;
-            const userImg = currentImage; // Simpan ke variabel lokal
-            
-            // Reset UI Input
+            appendBubble('user', userText, userImg);
             userInput.value = '';
-            clearImage();
+            clearFile();
 
             // Loading
             const loadingId = showLoading();
 
             try {
-                // CONTEXT PROMPT FOR IMAGE
                 let prompt = "";
-                
-                if (userImg) {
-                    // Trik agar AI sadar gambar (tanpa multimodal native yang berat)
-                    prompt = `[SYSTEM: User uploaded an image. Pretend you see it and analyze the context from user text.]\nUser: ${userMsg || "Apa pendapatmu tentang gambar ini?"}`;
-                } else {
-                    prompt = `User: ${userMsg}`;
-                }
+                if(userImg) prompt = `[SYSTEM: User uploaded image. Context: ${userText || "Analyze this image"}]`; 
+                else prompt = `User: ${userText}`;
 
-                // Puter AI Call
-                // Kita gunakan default model Puter yang pintar
                 const response = await puter.ai.chat(prompt);
-                
                 removeLoading(loadingId);
                 
                 let aiText = typeof response === 'object' ? response.message.content : response.toString();
-                appendMessage('ai', aiText);
-                
-                // Save History
-                saveChat(userMsg, aiText);
+                appendBubble('ai', aiText);
 
             } catch (err) {
                 removeLoading(loadingId);
-                appendMessage('system', "Koneksi terganggu. Coba lagi.");
+                appendBubble('system', "Koneksi Error.");
             }
         }
 
-        function appendMessage(role, text, img) {
+        function appendBubble(role, text, img) {
             const div = document.createElement('div');
-            div.className = `flex gap-4 max-w-3xl mx-auto w-full mb-6 animate-fade-in ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            div.className = `flex gap-3 max-w-3xl mx-auto w-full mb-4 fade-in ${role === 'user' ? 'flex-row-reverse' : ''}`;
             
             let content = '';
-            let imgHTML = img ? `<img src="${img}" class="max-h-60 rounded-lg border border-gray-600 mb-2 shadow-lg">` : '';
+            let imgHTML = img ? `<img src="${img}" class="rounded-lg mb-2 max-h-48 border border-slate-600">` : '';
 
             if (role === 'ai') {
                 content = `
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shrink-0 font-bold text-xs">A</div>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-[10px] text-purple-400 mb-1 font-bold">Apex AI</div>
-                        <div class="text-sm text-gray-200 leading-relaxed prose prose-invert max-w-none">
-                            ${marked.parse(text)}
-                        </div>
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shrink-0 mt-1"><i class="ri-openai-fill text-white"></i></div>
+                    <div class="max-w-[85%] bg-slate-800/80 border border-slate-700 p-4 rounded-2xl rounded-tl-none text-sm text-slate-200 shadow-sm prose prose-invert">
+                        ${marked.parse(text)}
                     </div>`;
             } else if (role === 'user') {
                 content = `
-                    <div class="flex-1 flex flex-col items-end max-w-[85%]">
-                        <div class="bg-[#1f1f1f] text-white p-3 rounded-2xl rounded-tr-none border border-[#333] shadow-md text-sm">
-                            ${imgHTML}
-                            <p>${text.replace(/\n/g, '<br>')}</p>
-                        </div>
+                    <div class="max-w-[85%] bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-md">
+                        ${imgHTML}
+                        <p>${text.replace(/\n/g, '<br>')}</p>
                     </div>`;
-            } else {
-                content = `<div class="w-full text-center text-xs text-red-500 bg-red-900/10 p-2 rounded border border-red-900/30">${text}</div>`;
+            } else { // System
+                content = `<div class="w-full text-center text-xs text-red-400 bg-red-900/20 p-1 rounded">${text}</div>`;
             }
 
             div.innerHTML = content;
@@ -366,11 +384,12 @@
             const id = 'load-' + Date.now();
             const div = document.createElement('div');
             div.id = id;
-            div.className = 'flex gap-4 max-w-3xl mx-auto w-full mb-6';
+            div.className = 'flex gap-3 max-w-3xl mx-auto w-full mb-4';
             div.innerHTML = `
-                <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center shrink-0"><i class="fas fa-circle-notch fa-spin text-purple-500 text-xs"></i></div>
-                <div class="flex items-center gap-2 text-xs text-gray-500 mt-2">
-                    <span class="animate-pulse">Apex sedang berpikir...</span>
+                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shrink-0"><i class="ri-openai-fill text-white"></i></div>
+                <div class="bg-slate-800/50 border border-slate-700 p-3 rounded-2xl rounded-tl-none flex items-center gap-2">
+                    <i class="ri-loader-4-line animate-spin text-brand-400"></i>
+                    <span class="text-xs text-slate-400">Thinking...</span>
                 </div>`;
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -378,43 +397,57 @@
         }
         function removeLoading(id) { const el = document.getElementById(id); if(el) el.remove(); }
 
-        // --- HISTORY ---
-        function saveChat(user, ai) {
-            // Simple History saving
-            chats.unshift({ user: user.substring(0, 20), ai: ai });
-            if(chats.length > 20) chats.pop(); // Max 20 history
-            localStorage.setItem('apex_chats', JSON.stringify(chats));
-            loadHistory();
+        // --- FILE HANDLING ---
+        function handleFile(input) {
+            const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentImage = e.target.result;
+                    document.getElementById('img-preview').src = currentImage;
+                    document.getElementById('img-preview-box').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        function clearFile() {
+            currentImage = null;
+            document.getElementById('file-upload').value = '';
+            document.getElementById('img-preview-box').classList.add('hidden');
         }
 
-        function loadHistory() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            chats.forEach((c, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-3 rounded-lg text-xs text-gray-400 hover:bg-[#1a1a1a] hover:text-white truncate transition mb-1";
-                btn.innerText = c.user || "Gambar/File";
-                list.appendChild(btn);
-            });
+        // --- VIDEO GEN (SIMULASI CANGGIH GIPHY) ---
+        // Karena Sora API berbayar mahal, kita gunakan Giphy API sebagai demo "Video Gen"
+        async function generateVideo() {
+            const prompt = document.getElementById('video-prompt').value;
+            const btn = document.getElementById('gen-vid-btn');
+            
+            if(!prompt) return alert("Isi deskripsi video dulu!");
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ri-loader-fill animate-spin"></i> Generating (AI)...`;
+
+            try {
+                // Fetch GIF yang relevan dari GIPHY (Gratis)
+                const res = await fetch(`https://api.giphy.com/v1/gifs/translate?api_key=0UTRbFtkMxAplrog07ovMn6GYesE4d8z&s=${prompt}`);
+                const data = await res.json();
+                
+                setTimeout(() => {
+                    document.getElementById('video-result').classList.remove('hidden');
+                    document.getElementById('generated-video-src').src = data.data.images.original.url;
+                    
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="ri-movie-2-ai-line"></i> Generate Video`;
+                }, 2000); // Simulasi delay render
+
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerHTML = `Error. Coba Lagi`;
+                alert("Gagal generate. Server busy.");
+            }
         }
 
-        function resetChat() {
-            chatBox.innerHTML = `
-                <div class="h-full flex flex-col items-center justify-center text-gray-600 opacity-40 space-y-4">
-                    <i class="fas fa-cube text-4xl"></i>
-                    <p class="text-sm font-mono">APEX ENGINE READY</p>
-                </div>`;
-        }
-
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            sb.classList.toggle('hidden');
-            sb.classList.toggle('absolute');
-            sb.classList.toggle('h-full');
-            sb.classList.toggle('w-72');
-        }
-
-        // START APP
+        // START
         init();
     </script>
 </body>
