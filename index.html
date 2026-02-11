@@ -3,404 +3,449 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rafi AI - Pro</title>
+    <title>Rafi AI - Pro Chatbot</title>
     
     <script src="https://js.puter.com/v2/"></script>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
+        body { font-family: 'Inter', sans-serif; background-color: #111827; color: white; }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        
+        /* Markdown Styling */
+        .prose p { margin-bottom: 0.6em; line-height: 1.6; }
+        .prose strong { color: #60a5fa; font-weight: 600; }
+        .prose code { background: #1f2937; padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #e5e7eb; }
+        .prose pre { background: #0f172a; padding: 12px; border-radius: 8px; overflow-x: auto; margin-top: 8px; border: 1px solid #1e293b; }
         
         .hidden-screen { display: none !important; }
-        
-        /* Markdown Styles */
-        .prose p { margin-bottom: 0.5em; }
-        .prose ul { list-style-type: disc; margin-left: 1.5em; }
-        .prose ol { list-style-type: decimal; margin-left: 1.5em; }
-        .prose pre { background: #1f2937; padding: 10px; border-radius: 8px; overflow-x: auto; }
-        .prose code { background: #374151; padding: 2px 5px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+        .glass-effect { background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans h-screen overflow-hidden selection:bg-blue-600">
+<body class="h-screen overflow-hidden flex flex-col">
 
-    <div id="login-screen" class="fixed inset-0 z-50 bg-gray-900 flex flex-col items-center justify-center p-4">
-        <div class="w-full max-w-md bg-gray-800 border border-gray-700 rounded-2xl p-8 shadow-2xl">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-blue-900/50 mb-4">
-                    <i class="fas fa-robot text-3xl text-white"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-white">Welcome Back</h1>
-                <p class="text-gray-400 text-sm">Masuk untuk mengakses Rafi AI Pro</p>
+    <div id="login-screen" class="fixed inset-0 z-50 bg-[#111827] flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-[#1f2937] border border-gray-700 rounded-2xl p-8 shadow-2xl text-center">
+            
+            <div class="mb-6 inline-block p-3 bg-blue-600/10 rounded-full">
+                <i class="fas fa-robot text-4xl text-blue-500"></i>
             </div>
             
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Username</label>
-                    <input type="text" id="username" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition" placeholder="Contoh: Bosku">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Password</label>
-                    <input type="password" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:border-blue-500 focus:outline-none transition" placeholder="• • • • • •">
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition shadow-lg mt-4">
-                    MASUK SEKARANG
-                </button>
-            </form>
-            <p class="text-center text-xs text-gray-600 mt-6">Simulasi Login (Password bebas)</p>
+            <h1 class="text-2xl font-bold mb-2">Selamat Datang</h1>
+            <p class="text-gray-400 text-sm mb-8">Masuk untuk mulai menggunakan Rafi AI</p>
+            
+            <button onclick="handleGoogleLogin()" class="w-full bg-white hover:bg-gray-100 text-gray-800 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-all transform active:scale-95 mb-4">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5">
+                <span>Sign in with Google</span>
+            </button>
+            
+            <p class="text-[10px] text-gray-500 mt-4">By continuing, you agree to our Terms of Service.</p>
         </div>
     </div>
 
-    <div id="app-screen" class="flex h-full hidden-screen">
+    <div id="pro-modal" class="hidden-screen fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#1f2937] border border-blue-500/30 w-full max-w-sm rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
+            
+            <div class="text-center relative z-10">
+                <div class="w-14 h-14 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-full mx-auto flex items-center justify-center mb-4 shadow-lg animate-pulse">
+                    <i class="fas fa-crown text-white text-xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white mb-2">Limit Harian Habis!</h2>
+                <p class="text-gray-300 text-sm mb-6">Kamu telah mencapai batas 100 pesan hari ini. Upgrade ke PRO untuk akses tanpa batas dan fitur eksklusif.</p>
+                
+                <a href="https://wa.me/6285267718086?text=Halo%20Admin,%20saya%20mau%20upgrade%20Rafi%20AI%20ke%20versi%20PRO" target="_blank" 
+                   class="block w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:-translate-y-1">
+                    <i class="fab fa-whatsapp mr-2"></i> Hubungi Admin (WA)
+                </a>
+                
+                <button onclick="closeProModal()" class="mt-4 text-xs text-gray-500 hover:text-gray-300 underline">Kembali (Baca Only)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-screen" class="hidden-screen flex h-full">
         
-        <div id="sidebar" class="w-64 bg-gray-950 border-r border-gray-800 flex-col hidden md:flex transition-all duration-300 absolute md:relative z-20 h-full">
-            <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-                <h2 class="font-bold text-gray-400 text-xs uppercase tracking-wider">Riwayat Chat</h2>
-                <button onclick="toggleSidebar()" class="md:hidden text-gray-400"><i class="fas fa-times"></i></button>
+        <div id="sidebar" class="hidden md:flex flex-col w-64 bg-[#1f2937] border-r border-gray-700">
+            <div class="p-4 border-b border-gray-700 flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                <span class="font-bold tracking-wide">Rafi AI</span>
             </div>
             
-            <div class="p-3">
-                <button onclick="startNewChat()" class="w-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-600/30 p-3 rounded-lg flex items-center gap-2 transition text-sm font-bold">
+            <div class="p-4">
+                <button onclick="startNewChat()" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-xl flex items-center justify-center gap-2 transition font-medium text-sm shadow-lg shadow-blue-900/20">
                     <i class="fas fa-plus"></i> Chat Baru
                 </button>
             </div>
 
-            <div id="history-list" class="flex-1 overflow-y-auto p-3 space-y-2">
+            <div class="flex-1 overflow-y-auto px-2 space-y-1" id="history-list">
                 </div>
 
-            <div class="p-4 border-t border-gray-800 bg-gray-950">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center font-bold text-xs" id="user-avatar">U</div>
+            <div class="p-4 border-t border-gray-700 bg-[#1f2937]">
+                <div class="bg-gray-800 rounded-xl p-3 flex items-center gap-3 border border-gray-700">
+                    <img id="user-avatar" src="" class="w-8 h-8 rounded-full bg-gray-600">
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-bold text-white truncate" id="user-display-name">User</p>
-                        <button onclick="logout()" class="text-xs text-red-400 hover:text-red-300">Log Out</button>
+                        <p id="user-name" class="text-xs font-bold truncate">User</p>
+                        <p class="text-[10px] text-green-400">Free Plan</p>
                     </div>
+                </div>
+                <div class="mt-2 text-[10px] text-center text-gray-500" id="limit-counter">
+                    Limit: 100/100
                 </div>
             </div>
         </div>
 
-        <div class="flex-1 flex flex-col h-full bg-gray-900 relative">
+        <div class="flex-1 flex flex-col relative bg-[#111827]">
             
-            <div class="h-16 border-b border-gray-800 flex items-center justify-between px-4 bg-gray-900/95 backdrop-blur z-10">
+            <div class="h-16 border-b border-gray-800 flex items-center justify-between px-4 glass-effect z-20">
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white"><i class="fas fa-bars"></i></button>
-                    <div class="flex flex-col">
-                        <span class="font-bold text-white flex items-center gap-2">
-                            Rafi AI <span class="bg-blue-600 text-[10px] px-1.5 py-0.5 rounded text-white">PRO</span>
-                        </span>
-                        <span class="text-[10px] text-green-500 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Online
-                        </span>
+                    <button onclick="toggleSidebarMobile()" class="md:hidden text-gray-400"><i class="fas fa-bars"></i></button>
+                    <div>
+                        <h1 class="font-bold text-sm md:text-base flex items-center gap-2">
+                            Rafi AI <span class="bg-blue-900/50 text-blue-400 text-[10px] px-2 py-0.5 rounded border border-blue-500/30">BETA</span>
+                        </h1>
                     </div>
                 </div>
-                <button onclick="clearCurrentChat()" class="text-gray-500 hover:text-red-500 text-xs" title="Hapus Chat Ini">
-                    <i class="fas fa-trash"></i>
-                </button>
+                
+                <div class="flex gap-3">
+                    <a href="https://wa.me/6285267718086?text=Halo,%20info%20Rafi%20AI%20Pro" target="_blank" class="hidden md:flex bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg items-center gap-1 hover:brightness-110 transition">
+                        <i class="fas fa-crown"></i> PRO
+                    </a>
+                    <button onclick="clearChat()" class="text-gray-500 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="logout()" class="md:hidden text-gray-500"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
             </div>
 
-            <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-6 pb-24 scroll-smooth">
-                <div class="flex flex-col items-center justify-center h-full text-gray-600 opacity-50 space-y-2">
-                    <i class="fas fa-comment-dots text-4xl"></i>
+            <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-6 pb-32 scroll-smooth">
+                <div class="flex flex-col items-center justify-center h-full text-gray-600 space-y-4 opacity-60">
+                    <div class="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-comment-alt text-2xl"></i>
+                    </div>
                     <p class="text-sm">Mulai percakapan baru...</p>
                 </div>
             </div>
 
-            <div class="absolute bottom-0 w-full bg-gray-900 border-t border-gray-800 p-3 md:p-4">
-                <div id="image-preview" class="hidden absolute bottom-full left-4 mb-2 bg-gray-800 p-2 rounded-lg border border-gray-700 shadow-xl">
+            <div class="absolute bottom-0 w-full bg-[#111827]/90 backdrop-blur border-t border-gray-800 p-4">
+                <div class="max-w-3xl mx-auto flex gap-3 items-end bg-[#1f2937] p-2 rounded-2xl border border-gray-700 shadow-xl focus-within:border-blue-500 transition-colors">
+                    
+                    <button onclick="document.getElementById('file-upload').click()" class="p-3 text-gray-400 hover:text-blue-400 transition">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleFile(this)">
+                    
+                    <textarea id="user-input" rows="1" class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm py-3 focus:outline-none resize-none max-h-32" placeholder="Ketik pesan di sini..."></textarea>
+                    
+                    <button onclick="sendMessage()" id="send-btn" class="p-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div id="img-preview-box" class="hidden absolute bottom-24 left-4 bg-gray-800 p-2 rounded-lg border border-gray-700 shadow-xl z-30">
                     <div class="relative">
-                        <img id="preview-img" src="" class="h-20 rounded object-cover">
-                        <button onclick="cancelUpload()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-md"><i class="fas fa-times"></i></button>
+                        <img id="img-preview" src="" class="h-20 rounded object-cover">
+                        <button onclick="cancelFile()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
 
-                <div class="max-w-4xl mx-auto flex gap-2 items-end bg-gray-800 p-2 rounded-2xl border border-gray-700 focus-within:border-blue-500 transition-colors shadow-lg">
-                    <button onclick="document.getElementById('file-upload').click()" class="p-3 text-gray-400 hover:text-blue-400 transition shrink-0">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                    <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="handleFileUpload(this)">
-
-                    <textarea id="user-input" rows="1" class="flex-1 bg-transparent text-white placeholder-gray-500 text-sm py-3 focus:outline-none resize-none max-h-32" placeholder="Ketik pesan..."></textarea>
-                    
-                    <button onclick="sendMessage()" class="p-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition shadow-lg shrink-0">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                <div class="text-center mt-2">
+                    <p class="text-[10px] text-gray-600">Sisa Limit Hari Ini: <span id="limit-display" class="font-bold text-blue-500">100</span> Chat</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="mobile-sidebar" class="hidden fixed inset-0 z-50 bg-black/50" onclick="toggleSidebarMobile()">
+        <div class="w-64 h-full bg-[#1f2937] p-4 animate-slide-in" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-bold">Menu</h2>
+                <button onclick="toggleSidebarMobile()"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="mobile-history" class="space-y-2"></div>
+        </div>
+    </div>
+
     <script>
-        // --- KONFIGURASI DAN STATE ---
+        // --- KONFIGURASI UTAMA ---
+        const MAX_DAILY_LIMIT = 100;
+        const WA_ADMIN = "6285267718086";
+        
+        // --- VARIABEL UI ---
         const loginScreen = document.getElementById('login-screen');
         const appScreen = document.getElementById('app-screen');
         const chatContainer = document.getElementById('chat-container');
         const userInput = document.getElementById('user-input');
-        const sidebar = document.getElementById('sidebar');
         const historyList = document.getElementById('history-list');
-        
-        let currentUser = localStorage.getItem('rafi_user');
-        let chats = JSON.parse(localStorage.getItem('rafi_chats')) || [];
-        let currentChatId = null;
-        let attachedImage = null; // Menyimpan base64 gambar sementara
+        const mobileHistory = document.getElementById('mobile-history');
+        const limitDisplay = document.getElementById('limit-display');
+        const limitCounter = document.getElementById('limit-counter');
 
-        // --- SISTEM LOGIN ---
-        function checkLogin() {
+        let currentUser = JSON.parse(localStorage.getItem('rafi_user_profile'));
+        let chats = JSON.parse(localStorage.getItem('rafi_chats_v6')) || [];
+        let limitData = JSON.parse(localStorage.getItem('rafi_limit_v6')) || { date: new Date().toDateString(), count: 0 };
+        let currentChatId = null;
+        let attachedImage = null;
+
+        // --- SISTEM LOGIN & LIMIT ---
+        function checkAuth() {
             if (currentUser) {
                 loginScreen.classList.add('hidden-screen');
                 appScreen.classList.remove('hidden-screen');
-                document.getElementById('user-display-name').innerText = currentUser;
-                document.getElementById('user-avatar').innerText = currentUser.charAt(0).toUpperCase();
-                loadSidebarHistory();
-                startNewChat(); // Buka chat kosong atau load terakhir
+                document.getElementById('user-name').innerText = currentUser.name;
+                document.getElementById('user-avatar').src = currentUser.avatar;
+                
+                checkLimitReset();
+                updateLimitUI();
+                loadHistory();
+                startNewChat();
             } else {
                 loginScreen.classList.remove('hidden-screen');
                 appScreen.classList.add('hidden-screen');
             }
         }
-        
-        function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            if (username) {
-                currentUser = username;
-                localStorage.setItem('rafi_user', currentUser);
-                checkLogin();
-            }
+
+        function handleGoogleLogin() {
+            // Simulasi Login Google (Agar UX bagus tanpa ribet backend)
+            const btn = document.querySelector('#login-screen button');
+            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Connecting to Google...`;
+            
+            setTimeout(() => {
+                // Buat profil palsu tapi terlihat asli
+                const profile = {
+                    name: "User " + Math.floor(Math.random() * 1000),
+                    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=" + Date.now(),
+                    email: "user@gmail.com"
+                };
+                localStorage.setItem('rafi_user_profile', JSON.stringify(profile));
+                currentUser = profile;
+                checkAuth();
+            }, 1500);
         }
 
         function logout() {
-            localStorage.removeItem('rafi_user');
-            location.reload();
-        }
-
-        // --- SISTEM HISTORY & SIDEBAR ---
-        function toggleSidebar() {
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('absolute');
-            sidebar.classList.toggle('w-64');
-            sidebar.classList.toggle('w-0');
-        }
-
-        function loadSidebarHistory() {
-            historyList.innerHTML = '';
-            // Urutkan dari yang terbaru
-            const sortedChats = chats.sort((a, b) => b.timestamp - a.timestamp);
-            
-            sortedChats.forEach(chat => {
-                const btn = document.createElement('button');
-                btn.className = `w-full text-left p-3 rounded-lg text-sm mb-1 truncate transition ${chat.id === currentChatId ? 'bg-gray-800 text-white border-l-2 border-blue-500' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`;
-                btn.innerText = chat.title || 'Percakapan Baru';
-                btn.onclick = () => loadChat(chat.id);
-                historyList.appendChild(btn);
-            });
-        }
-
-        function startNewChat() {
-            currentChatId = Date.now();
-            // Bersihkan tampilan chat tapi JANGAN simpan ke array dulu (simpan saat pesan pertama dikirim)
-            chatContainer.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full text-gray-600 opacity-50 space-y-2">
-                    <i class="fas fa-robot text-4xl"></i>
-                    <p class="text-sm">Halo ${currentUser}, ada yang bisa dibantu?</p>
-                </div>
-            `;
-            // Refresh sidebar agar highlight hilang
-            loadSidebarHistory(); 
-            // Tutup sidebar di mobile
-            if(window.innerWidth < 768) sidebar.classList.add('hidden');
-        }
-
-        function loadChat(id) {
-            const chat = chats.find(c => c.id === id);
-            if (!chat) return;
-
-            currentChatId = id;
-            chatContainer.innerHTML = '';
-            
-            chat.messages.forEach(msg => {
-                appendMessageToUI(msg.role, msg.text, msg.image);
-            });
-            
-            loadSidebarHistory(); // Update highlight
-            if(window.innerWidth < 768) sidebar.classList.add('hidden');
-        }
-
-        function saveChatToStorage(role, text, image = null) {
-            let chat = chats.find(c => c.id === currentChatId);
-            
-            if (!chat) {
-                // Buat chat baru jika belum ada
-                chat = {
-                    id: currentChatId,
-                    timestamp: Date.now(),
-                    title: text.substring(0, 20) + '...', // Judul otomatis
-                    messages: []
-                };
-                chats.push(chat);
-            }
-
-            chat.messages.push({ role, text, image });
-            chat.timestamp = Date.now(); // Update waktu terakhir
-            localStorage.setItem('rafi_chats', JSON.stringify(chats));
-            loadSidebarHistory();
-        }
-
-        function clearCurrentChat() {
-            if(confirm("Hapus percakapan ini?")) {
-                chats = chats.filter(c => c.id !== currentChatId);
-                localStorage.setItem('rafi_chats', JSON.stringify(chats));
-                startNewChat();
+            if(confirm("Keluar dari akun?")) {
+                localStorage.removeItem('rafi_user_profile');
+                location.reload();
             }
         }
 
-        // --- SISTEM UPLOAD & INPUT ---
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    attachedImage = e.target.result; // Base64 string
-                    document.getElementById('preview-img').src = attachedImage;
-                    document.getElementById('image-preview').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
+        function checkLimitReset() {
+            const today = new Date().toDateString();
+            if (limitData.date !== today) {
+                limitData = { date: today, count: 0 };
+                localStorage.setItem('rafi_limit_v6', JSON.stringify(limitData));
             }
         }
 
-        function cancelUpload() {
-            attachedImage = null;
-            document.getElementById('file-upload').value = '';
-            document.getElementById('image-preview').classList.add('hidden');
+        function updateLimitUI() {
+            const sisa = MAX_DAILY_LIMIT - limitData.count;
+            limitDisplay.innerText = sisa;
+            limitCounter.innerText = `Limit: ${limitData.count}/${MAX_DAILY_LIMIT}`;
+            
+            if (sisa <= 0) {
+                document.getElementById('send-btn').disabled = true;
+                showProModal();
+            }
         }
 
-        // --- CORE MESSAGING ---
+        function showProModal() {
+            document.getElementById('pro-modal').classList.remove('hidden-screen');
+        }
+        function closeProModal() {
+            document.getElementById('pro-modal').classList.add('hidden-screen');
+        }
+
+        // --- CORE CHAT LOGIC (OPTIMIZED) ---
         userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
 
         async function sendMessage() {
             const text = userInput.value.trim();
-            if (!text && !attachedImage) return;
+            if ((!text && !attachedImage) || limitData.count >= MAX_DAILY_LIMIT) {
+                if(limitData.count >= MAX_DAILY_LIMIT) showProModal();
+                return;
+            }
 
-            // Jika chat container masih ada tulisan "Halo", bersihkan
-            if (chatContainer.querySelector('.fa-robot')) chatContainer.innerHTML = '';
-
-            // 1. Tampilkan & Simpan Pesan User
-            const userMsgText = text;
-            const userMsgImg = attachedImage;
+            // UI Updates
+            if (chatContainer.querySelector('.fa-comment-alt')) chatContainer.innerHTML = '';
+            const userMsg = text;
+            const userImg = attachedImage;
             
-            appendMessageToUI('user', userMsgText, userMsgImg);
-            saveChatToStorage('user', userMsgText, userMsgImg);
-
-            // Reset Input
+            appendBubble('user', userMsg, userImg);
             userInput.value = '';
-            cancelUpload();
+            cancelFile();
+            
+            // Tambah Counter Limit
+            limitData.count++;
+            localStorage.setItem('rafi_limit_v6', JSON.stringify(limitData));
+            updateLimitUI();
 
-            // 2. Loading State
+            // Save Chat (User)
+            saveChat('user', userMsg, userImg);
+
+            // Loading
             const loadingId = showLoading();
 
             try {
-                // 3. Persiapkan Prompt untuk AI
-                // Karena Puter.js (Free) basicnya teks, kita kasih "Kode Konteks" kalau ada gambar
-                let prompt = `System: Kamu adalah Rafi AI. User bernama ${currentUser}.\n`;
-                
-                if (userMsgImg) {
-                    prompt += `[INFO SISTEM: User baru saja mengirim sebuah gambar/file, tapi kamu hanya melihat teks ini. Jika user bertanya tentang gambar itu, jawablah dengan sopan bahwa "Saya bisa melihat gambar yang kamu kirim di chat, tapi sebagai AI teks saya perlu kamu jelaskan sedikit detailnya agar saya bisa bantu analisis."]\n`;
-                }
-                
-                prompt += `User: ${userMsgText}`;
+                // Call Puter AI
+                let prompt = `System: Kamu adalah Rafi AI, asisten profesional. User: ${userMsg}`;
+                if (userImg) prompt += ` [User mengirim gambar]`;
 
-                // 4. Kirim ke Puter.js
                 const response = await puter.ai.chat(prompt);
-                
                 removeLoading(loadingId);
-                
-                let aiResponse = "";
-                if (typeof response === 'object' && response.message) {
-                    aiResponse = response.message.content;
-                } else {
-                    aiResponse = response.toString();
-                }
 
-                // 5. Tampilkan & Simpan Balasan AI
-                appendMessageToUI('ai', aiResponse);
-                saveChatToStorage('ai', aiResponse);
+                let aiText = typeof response === 'object' ? response.message.content : response.toString();
+                
+                appendBubble('ai', aiText);
+                saveChat('ai', aiText);
 
             } catch (err) {
                 removeLoading(loadingId);
-                appendMessageToUI('system', "Error koneksi: " + err.message);
+                appendBubble('system', "Koneksi lambat/putus. Coba lagi.");
             }
         }
 
-        function appendMessageToUI(role, text, image = null) {
+        // --- UI BUBBLES ---
+        function appendBubble(role, text, img = null) {
             const div = document.createElement('div');
-            div.className = `flex gap-4 max-w-3xl mx-auto w-full mb-4 ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            div.className = `flex gap-3 max-w-3xl mx-auto w-full mb-4 ${role === 'user' ? 'flex-row-reverse' : ''}`;
             
-            let content = '';
-            let avatar = '';
-
-            // Render Gambar jika ada
-            let imageHtml = '';
-            if (image) {
-                imageHtml = `<img src="${image}" class="max-w-full h-auto rounded-lg mb-2 border border-gray-600 shadow-md" style="max-height: 200px;">`;
-            }
+            let contentHTML = '';
+            let imgHTML = img ? `<img src="${img}" class="rounded-lg mb-2 max-h-48 border border-gray-600">` : '';
 
             if (role === 'ai') {
-                avatar = `<div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mt-1 shadow-md text-xs font-bold text-white">AI</div>`;
-                content = `
-                    <div class="max-w-[85%]">
-                        <div class="text-[10px] text-gray-500 mb-1 ml-1">Rafi AI</div>
-                        <div class="bg-gray-800 border border-gray-700 text-gray-200 p-4 rounded-2xl rounded-tl-none shadow-sm prose prose-invert prose-sm">
-                            ${marked.parse(text)}
-                        </div>
+                contentHTML = `
+                    <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center shrink-0 mt-1"><i class="fas fa-robot text-xs text-white"></i></div>
+                    <div class="max-w-[85%] bg-[#1f2937] border border-gray-700 p-4 rounded-2xl rounded-tl-none text-sm text-gray-200 shadow-md prose prose-invert">
+                        ${marked.parse(text)}
                     </div>`;
             } else if (role === 'user') {
-                avatar = `<div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center shrink-0 mt-1 text-xs text-gray-300"><i class="fas fa-user"></i></div>`;
-                content = `
-                    <div class="max-w-[85%] flex flex-col items-end">
-                        <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none shadow-md text-sm">
-                            ${imageHtml}
-                            <p>${text.replace(/\n/g, '<br>')}</p>
-                        </div>
+                contentHTML = `
+                    <div class="max-w-[85%] bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-md">
+                        ${imgHTML}
+                        <p>${text.replace(/\n/g, '<br>')}</p>
                     </div>`;
             } else {
-                content = `<div class="w-full text-center text-red-400 text-xs bg-red-900/10 p-2 rounded border border-red-900/30">${text}</div>`;
+                contentHTML = `<div class="w-full text-center text-xs text-red-400 bg-red-900/10 p-1 rounded border border-red-900/20">${text}</div>`;
             }
 
-            div.innerHTML = role === 'system' ? content : (role === 'user' ? content + avatar : avatar + content);
+            div.innerHTML = contentHTML;
             chatContainer.appendChild(div);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
         }
 
         function showLoading() {
             const id = 'load-' + Date.now();
             const div = document.createElement('div');
             div.id = id;
-            div.className = 'flex gap-4 max-w-3xl mx-auto w-full';
+            div.className = 'flex gap-3 max-w-3xl mx-auto w-full mb-4';
             div.innerHTML = `
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shrink-0 mt-1 text-xs text-white">AI</div>
-                <div class="bg-gray-800 border border-gray-700 p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
-                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-                    <span class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
-                </div>
-            `;
+                <div class="w-8 h-8 rounded bg-blue-600 flex items-center justify-center shrink-0"><i class="fas fa-robot text-xs text-white"></i></div>
+                <div class="bg-[#1f2937] border border-gray-700 p-3 rounded-2xl rounded-tl-none flex items-center gap-2">
+                    <i class="fas fa-circle-notch fa-spin text-blue-400"></i>
+                    <span class="text-xs text-gray-400">Mengetik...</span>
+                </div>`;
             chatContainer.appendChild(div);
             chatContainer.scrollTop = chatContainer.scrollHeight;
             return id;
         }
+        function removeLoading(id) { const el = document.getElementById(id); if(el) el.remove(); }
 
-        // Init
-        checkLogin();
+        // --- HISTORY & STORAGE ---
+        function saveChat(role, text, img) {
+            let chat = chats.find(c => c.id === currentChatId);
+            if (!chat) {
+                chat = { id: currentChatId, title: text.substring(0,25) || "Gambar", msgs: [] };
+                chats.unshift(chat); // Add to top
+            }
+            chat.msgs.push({ role, text, img });
+            localStorage.setItem('rafi_chats_v6', JSON.stringify(chats));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            historyList.innerHTML = '';
+            chats.forEach(chat => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3 rounded-lg text-xs truncate mb-1 transition ${chat.id === currentChatId ? 'bg-gray-700 text-white font-bold' : 'text-gray-400 hover:bg-gray-800'}`;
+                btn.innerHTML = `<i class="far fa-comment-alt mr-2"></i> ${chat.title}`;
+                btn.onclick = () => openChat(chat.id);
+                historyList.appendChild(btn);
+            });
+            // Clone to mobile sidebar
+            mobileHistory.innerHTML = historyList.innerHTML; 
+        }
+
+        function startNewChat() {
+            currentChatId = Date.now();
+            chatContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-gray-600 space-y-4 opacity-60">
+                    <div class="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-comment-alt text-2xl"></i>
+                    </div>
+                    <p class="text-sm">Halo ${currentUser.name}, apa kabar?</p>
+                </div>`;
+            loadHistory();
+            toggleSidebarMobile(false);
+        }
+
+        function openChat(id) {
+            const chat = chats.find(c => c.id === id);
+            if(!chat) return;
+            currentChatId = id;
+            chatContainer.innerHTML = '';
+            chat.msgs.forEach(m => appendBubble(m.role, m.text, m.img));
+            loadHistory();
+            toggleSidebarMobile(false);
+        }
+
+        function clearChat() {
+            if(confirm("Hapus chat ini?")) {
+                chats = chats.filter(c => c.id !== currentChatId);
+                localStorage.setItem('rafi_chats_v6', JSON.stringify(chats));
+                startNewChat();
+            }
+        }
+
+        // --- FILE HANDLING ---
+        function handleFile(input) {
+            const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    attachedImage = e.target.result;
+                    document.getElementById('img-preview').src = attachedImage;
+                    document.getElementById('img-preview-box').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        function cancelFile() {
+            attachedImage = null;
+            document.getElementById('file-upload').value = '';
+            document.getElementById('img-preview-box').classList.add('hidden');
+        }
+
+        function toggleSidebarMobile(force) {
+            const el = document.getElementById('mobile-sidebar');
+            if (force === false) el.classList.add('hidden');
+            else el.classList.toggle('hidden');
+        }
+
+        // START
+        checkAuth();
+
     </script>
 </body>
 </html>
